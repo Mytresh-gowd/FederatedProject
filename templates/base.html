@@ -1,0 +1,6 @@
+{% load static %}
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{% block title %}Federated Healthcare{% endblock %}</title><link rel="stylesheet" href="{% static 'css/app.css' %}"></head><body>
+<div class="shell">
+<header class="topbar"><a class="brand" href="{% url 'dashboard' %}"><span class="brand-mark">✦</span> Federated<span>Health</span></a>{% if user.is_authenticated %}<nav><a href="{% url 'dashboard' %}">Dashboard</a>{% if user.profile.role == 'PATIENT' %}<a href="{% url 'patient_predict' %}">Predict</a><a href="{% url 'patient_history' %}">History</a>{% elif user.profile.role == 'HOSPITAL' %}<a href="{% url 'hospital_upload' %}">Local Training</a><a href="{% url 'hospital_federated' %}">FL Round</a>{% else %}<a href="{% url 'admin_rounds' %}">FL Rounds</a><a href="{% url 'admin_hospitals' %}">Hospitals</a><a href="{% url 'admin_patients' %}">Predictions</a>{% endif %}<a class="logout" href="{% url 'logout' %}">Logout</a></nav>{% endif %}</header>
+<main>{% if messages %}{% for message in messages %}<div class="alert {{ message.tags }}">{{ message }}</div>{% endfor %}{% endif %}{% block content %}{% endblock %}</main>
+<footer>Federated Healthcare • Synthetic/controlled benchmark • Not a clinical diagnosis</footer></div></body></html>
