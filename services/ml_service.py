@@ -73,14 +73,23 @@ def predict_one(payload):
 
 
 def model_info():
-    bundle = load_model()
-    pipe = bundle['pipeline']
-    rf = pipe.named_steps['classifier']
+    """Return lightweight model metadata without deserializing the ML model.
+
+    Render's free 512 MB instance should not load the ~47 MB joblib model merely
+    to render dashboards. Actual model deserialization happens only when a
+    prediction or local training operation needs it.
+    """
     active_path = _latest_model_path()
+    version = 'v1.0.0'
+    trees = 180
+    match = re.search(r'global_model_round_(\d+)\.joblib$', active_path.name)
+    if match:
+        version = f'v{int(match.group(1)) + 1}.0.0'
+        trees = 180
     return {
-        'version': bundle.get('model_version', 'v1.0.0'),
-        'trees': len(rf.estimators_),
-        'processed_features': bundle.get('feature_schema', {}).get('processed_features', 55),
-        'classes': bundle.get('feature_schema', {}).get('classes', CLASSES),
+        'version': version,
+        'trees': trees,
+        'processed_features': 55,
+        'classes': CLASSES,
         'artifact': active_path.name,
     }
